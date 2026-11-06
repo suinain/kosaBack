@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+        <setting name="mapUnderscoreToCamelCase" value="true" />
+        <setting name="jdbcTypeForNull" value="NULL" />
+    </settings>
+    <typeAliases>
+        <typeAlias alias="review" type="com.mycompany.demo.database.entity.Review" />
+        <typeAlias alias="member" type="com.mycompany.demo.database.entity.Member" />
+        <typeAlias alias="orderItem" type="com.mycompany.demo.database.entity.OrderItem" />
+        <typeAlias alias="orders" type="com.mycompany.demo.database.entity.Orders" />
+        <typeAlias alias="product" type="com.mycompany.demo.database.entity.Product" />
+        <typeAlias alias="seller" type="com.mycompany.demo.database.entity.Seller" />
+    </typeAliases>
+</configuration>

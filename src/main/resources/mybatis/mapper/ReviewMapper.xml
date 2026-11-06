@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mycompany.demo.database.dao.ReviewDao">
+
+    <insert id="insert" parameterType="review" useGeneratedKeys="true" keyProperty="reviewId" keyColumn="review_id">
+        INSERT INTO review (title, content, writer, writed_at, product_id, file_name, file_type, file_data)
+        VALUES (#{title}, #{content}, #{writer}, CURRENT_TIMESTAMP, #{productId},
+                #{fileName}, #{fileType}, #{fileData})
+    </insert>
+
+    <select id="selectById" resultType="review">
+        SELECT review_id AS review_id, title, content, writer, writed_at, product_id,
+               file_name, file_type, file_data
+        FROM review
+        WHERE review_id = #{reviewId}
+    </select>
+
+    <!-- where: title/content substring search; writer/productId exact match -->
+    <sql id="searchCondition">
+        <where>
+            <if test="where != null">
+                <if test="where.title != null and where.title != ''">
+                    AND title LIKE CONCAT('%', #{where.title}, '%')
+                </if>
+                <if test="where.content != null and where.content != ''">
+                    AND content LIKE CONCAT('%', #{where.content}, '%')
+                </if>
+                <if test="where.writer != null and where.writer != ''">
+                    AND writer = #{where.writer}
+                </if>
+                <if test="where.productId != null">
+                    AND product_id = #{where.productId}
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectCount" resultType="_int">
+        SELECT COUNT(*) FROM review
+        <include refid="searchCondition" />
+    </select>
+
+    <select id="selectPage" resultType="review">
+        SELECT review_id AS review_id, title, writer, writed_at, product_id,
+               file_name
+        FROM review
+        <include refid="searchCondition" />
+        ORDER BY review_id DESC
+        LIMIT #{pager.rowsPerPage} 
+        OFFSET #{pager.startRowIndex}
+    </select>
+
+    <update id="update" parameterType="review">
+        UPDATE review
+        SET title = #{review.title},
+            content = #{review.content},
+            file_name = #{review.fileName},
+            file_type = #{review.fileType},
+            file_data = #{review.fileData}
+        WHERE review_id = #{review.reviewId}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM review
+        WHERE review_id = #{reviewId}
+    </delete>
+
+</mapper>

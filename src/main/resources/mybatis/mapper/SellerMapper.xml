@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mycompany.demo.database.dao.SellerDao">
+
+    <insert id="insert" parameterType="seller" useGeneratedKeys="true" keyProperty="sellerId" keyColumn="seller_id">
+        INSERT INTO seller (seller_name, email, phone, registered_at)
+        VALUES (#{sellerName}, #{email}, #{phone}, COALESCE(#{registeredAt}, CURRENT_TIMESTAMP))
+    </insert>
+
+    <select id="selectById" resultType="seller">
+        SELECT seller_id, seller_name, email, phone, registered_at
+        FROM seller
+        WHERE seller_id = #{sellerId}
+    </select>
+
+    <!-- where keys: sellerId, sellerName, email, phone -->
+    <sql id="searchCondition">
+        <where>
+            <if test="where != null">
+                <if test="where.sellerId != null">
+                    AND seller_id = #{where.sellerId}
+                </if>
+                <if test="where.sellerName != null and where.sellerName != ''">
+                    AND seller_name LIKE CONCAT('%', #{where.sellerName}, '%')
+                </if>
+                <if test="where.email != null and where.email != ''">
+                    AND email LIKE CONCAT('%', #{where.email}, '%')
+                </if>
+                <if test="where.phone != null and where.phone != ''">
+                    AND phone LIKE CONCAT('%', #{where.phone}, '%')
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectCount" resultType="_int">
+        SELECT COUNT(*)
+        FROM seller
+        <include refid="searchCondition" />
+    </select>
+
+    <select id="selectPage" resultType="seller">
+        SELECT seller_id, seller_name, email, phone, registered_at
+        FROM seller
+        <include refid="searchCondition" />
+        ORDER BY seller_id DESC
+        LIMIT #{pager.rowsPerPage} OFFSET #{pager.startRowIndex}
+    </select>
+
+    <update id="update" parameterType="seller">
+        UPDATE seller
+        SET seller_name = #{sellerName},
+            email = #{email},
+            phone = #{phone}
+        WHERE seller_id = #{sellerId}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM seller
+        WHERE seller_id = #{sellerId}
+    </delete>
+
+</mapper>

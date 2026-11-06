@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mycompany.demo.database.dao.OrderItemDao">
+
+    <insert id="insert" parameterType="orderItem">
+        INSERT INTO order_item (order_id, product_id, quantity, unit_price)
+        VALUES (#{orderId}, #{productId}, #{quantity}, #{unitPrice})
+    </insert>
+
+    <select id="selectById" resultType="orderItem">
+        SELECT order_id, product_id, quantity, unit_price
+        FROM order_item
+        WHERE order_id = #{orderId} AND product_id = #{productId}
+    </select>
+
+    <!-- where keys: orderId, productId -->
+    <sql id="searchCondition">
+        <where>
+            <if test="where != null">
+                <if test="where.orderId != null">
+                    AND order_id = #{where.orderId}
+                </if>
+                <if test="where.productId != null">
+                    AND product_id = #{where.productId}
+                </if>
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectCount" resultType="_int">
+        SELECT COUNT(*)
+        FROM order_item
+        <include refid="searchCondition" />
+    </select>
+
+    <select id="selectPage" resultType="orderItem">
+        SELECT order_id, product_id, quantity, unit_price
+        FROM order_item
+        <include refid="searchCondition" />
+        ORDER BY order_id DESC, product_id DESC
+        LIMIT #{pager.rowsPerPage} OFFSET #{pager.startRowIndex}
+    </select>
+
+    <update id="update" parameterType="orderItem">
+        UPDATE order_item
+        SET quantity = #{quantity},
+            unit_price = #{unitPrice}
+        WHERE order_id = #{orderId} AND product_id = #{productId}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM order_item
+        WHERE order_id = #{orderId} AND product_id = #{productId}
+    </delete>
+
+</mapper>
